@@ -17,3 +17,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+migrate_installed.flag
+/storage/Documents/*
+!/storage/Documents/.keep

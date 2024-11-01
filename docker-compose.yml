@@ -1,0 +1,28 @@
+services:
+  app_php:
+    build: ./infra/.
+    container_name: app
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+
+  app_db:
+    image: mysql:8.0
+    container_name: app_db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

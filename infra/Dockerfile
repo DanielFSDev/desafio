@@ -1,0 +1,43 @@
+FROM ubuntu:24.04
+
+RUN apt update && apt install -y \
+    software-properties-common \
+    curl \
+    git \
+    zip \
+    unzip \
+    nginx \
+    supervisor
+
+RUN apt install -y \
+    php8.3 \
+    php8.3-fpm \
+    php8.3-cli \
+    php8.3-mbstring \
+    php8.3-xml \
+    php8.3-mysql \
+    php8.3-curl \
+    php8.3-zip \
+    php8.3-intl \
+    php8.3-gd \
+    php8.3-bcmath \
+    php8.3-soap \
+    php8.3-opcache
+
+RUN apt-get update && apt-get install -y \
+    netcat-openbsd \
+    default-mysql-client \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN sed -i 's/listen = .*/listen = 9000/' /etc/php/8.3/fpm/pool.d/www.conf
+
+WORKDIR /var/www/html
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+EXPOSE 80
+
+COPY nginx.conf /etc/nginx/sites-available/default
+
+CMD ["sh", "-c", "service php8.3-fpm start && /var/www/html/infra/init.sh && nginx -g 'daemon off;'"]
