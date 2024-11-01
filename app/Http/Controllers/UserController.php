@@ -37,4 +37,24 @@ class UserController extends Controller
         $nameUser = $user->name;
         return redirect()->route('login')->with('success', "$nameUser registrado com sucesso!");
     }
+
+    public function showLoginForm(): View
+    {
+        return view('auth.login');
+    }
+
+    public function login(Request $request): RedirectResponse {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string|min:8',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->route('login.view')->withErrors($validator)->withInput();
+        }
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            return redirect()->route('documents')->with('success', 'Login realizado com sucesso!');
+        }
+        return redirect()->route('login.view')
+            ->withErrors(['email' => 'E-mail ou senha estão incorretas.'])->withInput();
+    }
 }
