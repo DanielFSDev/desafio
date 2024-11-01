@@ -57,4 +57,10 @@ class UserController extends Controller
         return redirect()->route('login.view')
             ->withErrors(['email' => 'E-mail ou senha estão incorretas.'])->withInput();
     }
+
+    public function logout(): RedirectResponse
+    {
+        Auth::logout();
+        return redirect()->route('login.view')->with('success', 'Até a próxima!');
+    }
 }
