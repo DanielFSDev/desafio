@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DocumentVariable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +30,35 @@ class DocumentController extends Controller
             'file_name' => $fileName,
             'file_path' => $path
         ]);
-        return redirect()->route('documents')->with('success', 'Arquivo enviado com sucesso!');
+        return redirect()->route('documents')->with('success', 'Documento enviado com sucesso!');
+    }
+
+    public function variablesView(Request $request): View
+    {
+        $documentId = $request->get('document_id');
+        $document = Document::with('variables')->findOrFail($documentId);
+        if (!$document) {
+            return view('documents.documents')->with('error', 'Documento não encontrado!');
+        }
+        $variables = json_decode($document->variables()->first()->variables ?? '[]', true);
+        return view('documents.variables', compact('document', 'variables'));
+    }
+
+    public function saveVariables(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'document_id' => 'required|exists:documents,id',
+            'variables' => 'required|array'
+        ]);
+        $documentVariable = DocumentVariable::firstOrNew([
+            'document_id' => $validated['document_id']
+        ]);
+        $existingVariables = json_decode($documentVariable->variables ?? '[]', true);
+        foreach ($validated['variables'] as $key => $value) {
+            $existingVariables[$key] = $value;
+        }
+        $documentVariable->variables = json_encode($existingVariables);
+        $documentVariable->save();
+        return redirect()->route('documents')->with('success', 'Documento editado com sucesso!');
     }
 }

@@ -58,30 +58,59 @@
             font-size: 16px;
             color: #333;
         }
+        .button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin-left: 5px;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .button-container {
+            display: flex;
+            margin-left: 10px;
+        }
+        .documents-list {
+            margin-bottom: 20px;
+        }
+        .document-item {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
-<div class="welcome-message">
-    Bem-vindo, {{ Auth::user()->name }}
-</div>
-<form id="logout-form" action="{{ route('logout') }}" method="POST" class="logout-button">
-    @csrf
-    <button type="submit">Desconectar</button>
-</form>
-<div class="container">
-    <h2>Documentos</h2>
-    <form action="{{ route('document.upload') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <input type="file" name="file" id="file" required>
-        <button type="submit">Adicionar Documento</button>
-    </form>
-    <div class="documents-list">
-        <h3>Seus Documentos</h3>
-            @foreach ($documents as $document)
-                    <a href="{{ asset('storage/' . $document->file_path) }}" target="_blank">{{ $document->file_name }}</a>
-                    - Enviado em: {{ $document->created_at->format('d/m/Y H:i:s') }}<br>
-            @endforeach
+    <div class="welcome-message">
+        Bem-vindo, {{ Auth::user()->name }}
     </div>
-</div>
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="logout-button">
+        @csrf
+        <button type="submit">Desconectar</button>
+    </form>
+    <div class="container">
+        <h2>Documentos</h2>
+        <form action="{{ route('document.upload') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="file" name="file" id="file" required>
+            <button type="submit">Adicionar Documento</button>
+        </form>
+        <div class="documents-list">
+            <h3>Seus Documentos</h3>
+            @foreach ($documents as $document)
+                <div class="document-item">
+                    <a href="{{ asset('storage/' . $document->file_path) }}" target="_blank">{{ $document->file_name }}</a>
+                    - Enviado em: {{ $document->created_at->format('d/m/Y H:i:s') }}
+                    <div class="button-container">
+                        <a href="{{ route('documents.variables.view', ['document_id' => $document->id]) }}" class="button">Editar</a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
 </body>
 </html>

@@ -13,4 +13,6 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::get('/documents',[DocumentController::class, 'documentsView'])->name('documents');
     Route::post('/upload', [DocumentController::class, 'upload'])->name('document.upload');
+    Route::get('/documents/edition', [DocumentController::class, 'variablesView'])->name('documents.variables.view');
+    Route::post('/documents/edition', [DocumentController::class, 'saveVariables'])->name('documents.variables');
 });
