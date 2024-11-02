@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('documents_variables', function (Blueprint $table) {
+        Schema::create('document_variables', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('document_id');
             $table->json('variables')->nullable();
