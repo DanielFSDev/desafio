@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function showRegisterForm(): View
+    public function registerForm(): View
     {
         return view('auth.register');
     }
@@ -38,7 +38,7 @@ class UserController extends Controller
         return redirect()->route('login')->with('success', "$nameUser registrado com sucesso!");
     }
 
-    public function showLoginForm(): View
+    public function loginForm(): View
     {
         return view('auth.login');
     }
