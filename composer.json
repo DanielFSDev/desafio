@@ -10,7 +10,8 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "dev-develop",
         "mpdf/mpdf": "^8.2",
-        "phpoffice/phpword": "^1.3"
+        "phpoffice/phpword": "^1.3",
+        "phpword/phpword": "dev-master"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
