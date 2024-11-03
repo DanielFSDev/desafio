@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    public function index(): RedirectResponse
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        return redirect()->route('documents');
+    }
+
     public function registerForm(): View
     {
         return view('auth.register');
