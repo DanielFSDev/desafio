@@ -15,4 +15,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/upload', [DocumentController::class, 'upload'])->name('document.upload');
     Route::get('/documents/edition', [DocumentController::class, 'variablesView'])->name('documents.variables.view');
     Route::post('/documents/edition', [DocumentController::class, 'saveVariables'])->name('documents.variables');
+    Route::get('/documents/pdf', [DocumentController::class, 'downloadPdf'])->name('documents.download.pdf');
 });

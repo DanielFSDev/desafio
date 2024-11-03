@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\Document;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class DocumentController extends Controller
 {
@@ -60,5 +61,23 @@ class DocumentController extends Controller
         $documentVariable->variables = json_encode($existingVariables);
         $documentVariable->save();
         return redirect()->route('documents')->with('success', 'Documento editado com sucesso!');
+    }
+
+    public function downloadPdf(Request $request): BinaryFileResponse
+    {
+        $documentId = $request->get('document_id');
+        $isToShow = filter_var($request->get('is_to_show', false), FILTER_VALIDATE_BOOLEAN);
+        $document = Document::findOrFail($documentId);
+        $docxPath = storage_path('app/public/' . $document->file_path);
+        $command = sprintf(
+            "HOME=/tmp libreoffice --headless --convert-to pdf --outdir %s %s",
+            dirname($docxPath),
+            $docxPath
+        );
+        exec($command);
+        $pdfOutputPath = dirname($docxPath) . '/' . pathinfo($docxPath)['filename'] . '.pdf';
+        return $isToShow
+            ? response()->file($pdfOutputPath, ['Content-Type' => 'application/pdf'])->deleteFileAfterSend()
+            : response()->download($pdfOutputPath)->deleteFileAfterSend();
     }
 }
