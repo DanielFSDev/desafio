@@ -80,4 +80,13 @@ class DocumentController extends Controller
             ? response()->file($pdfOutputPath, ['Content-Type' => 'application/pdf'])->deleteFileAfterSend()
             : response()->download($pdfOutputPath)->deleteFileAfterSend();
     }
+
+    public function delete(Request $request): RedirectResponse
+    {
+        $request->validate(['document_id' => 'required|exists:documents,id']);
+        $document = Document::findOrFail(request('document_id'));
+        $documentName = $document->file_name;
+        $document->delete();
+        return redirect()->route('documents')->with('success', "$documentName removido com sucesso!");
+    }
 }
