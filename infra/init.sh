@@ -24,8 +24,8 @@ cd "$path_dir" \
     && mkdir -p "$path_dir"/public \
     && mkdir -p "$path_dir"/bootstrap/cache/ \
     && mkdir -p "$path_dir"/storage/proxies/ \
-    && mkdir -p "$path_dir"/storage/app/documents/public/ \
-    && chmod 775 -R "$path_dir"/storage/app/documents/public/ \
+    && mkdir -p "$path_dir"/storage/app/documents/ \
+    && chmod 775 -R "$path_dir"/storage/app/documents/ \
     && chown -R $apache_user "$path_dir"/storage/app \
     && chown -R $apache_user "$path_dir"/storage/framework \
     && chown -R $apache_user "$path_dir"/storage/logs \
