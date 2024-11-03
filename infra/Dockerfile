@@ -31,6 +31,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN sed -i 's/listen = .*/listen = 9000/' /etc/php/8.3/fpm/pool.d/www.conf
+RUN sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 30M/' /etc/php/8.3/fpm/php.ini
+RUN sed -i 's/post_max_size = 8M/post_max_size = 30M/' /etc/php/8.3/fpm/php.ini
 
 WORKDIR /var/www/html
 
