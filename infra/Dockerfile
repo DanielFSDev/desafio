@@ -27,8 +27,12 @@ RUN apt install -y \
 RUN apt-get update && apt-get install -y \
     netcat-openbsd \
     default-mysql-client \
+    libreoffice \
+    vim \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN usermod -s /bin/bash www-data
 
 RUN sed -i 's/listen = .*/listen = 9000/' /etc/php/8.3/fpm/pool.d/www.conf
 RUN sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 30M/' /etc/php/8.3/fpm/php.ini
