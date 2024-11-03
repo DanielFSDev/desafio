@@ -108,8 +108,9 @@
                     - Enviado em: {{ $document->created_at->format('d/m/Y H:i:s') }}
                     <div class="button-container">
                         <a href="{{ route('documents.variables.view', ['document_id' => $document->id]) }}" class="button">Editar</a>
-                        <a href="{{ route('documents.download.pdf', ['document_id' => $document->id]) }}" class="button">Baixar PDF</a>
                         <a href="{{ route('documents.download.pdf', ['document_id' => $document->id, 'is_to_show' => true]) }}" class="button">Visualizar PDF</a>
+                        <a href="{{ route('documents.download.pdf', ['document_id' => $document->id]) }}" class="button">Baixar PDF</a>
+                        <a href="{{ asset('storage/' . $document->file_path) }}" class="button">Baixar DOCX</a>
                     </div>
                 </div>
             @endforeach
