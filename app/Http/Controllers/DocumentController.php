@@ -6,6 +6,7 @@ use App\Models\DocumentVariable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use App\Models\Document;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -90,6 +91,10 @@ class DocumentController extends Controller
         $document = Document::findOrFail(request('document_id'));
         $documentName = $document->file_name;
         $document->delete();
+        $filePath = $document->file_path;
+        if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
+        }
         return redirect()->route('documents')->with('success', "$documentName removido com sucesso!");
     }
 }
