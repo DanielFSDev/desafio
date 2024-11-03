@@ -65,6 +65,7 @@
 </head>
 <body>
 <div class="container">
+    @include('messages')
     <h2>Login</h2>
     <form action="/login" method="POST">
         @csrf

@@ -85,6 +85,7 @@
     </style>
 </head>
 <body>
+    @include('messages')
     <div class="welcome-message">
         Bem-vindo, {{ Auth::user()->name }}
     </div>

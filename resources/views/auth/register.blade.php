@@ -57,35 +57,11 @@
         button:hover {
             background-color: #45a049;
         }
-        .error-message {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: red;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            z-index: 1000;
-            transition: opacity 0.5s ease;
-            opacity: 1;
-        }
-        .error-message {
-            opacity: 0;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
 <div class="container">
-    @if ($errors->any())
-        <div class="error-message">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    @include('messages')
     <h2>Registrar</h2>
     <form action="{{ route('register') }}" method="POST">
         @csrf
