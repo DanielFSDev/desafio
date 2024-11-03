@@ -70,17 +70,44 @@
         .button:hover {
             background-color: #45a049;
         }
-        .button-container {
-            display: flex;
-            margin-left: 10px;
-        }
         .documents-list {
-            margin-bottom: 20px;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+        .documents-list h3 {
+            text-align: center;
         }
         .document-item {
-            margin-bottom: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .button-container {
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .button-container .button {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+        .button-container .button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -101,16 +128,15 @@
             <button type="submit">Adicionar Documento</button>
         </form>
         <div class="documents-list">
-            <h3>Seus Documentos</h3>
+            <h3>Documentos adicionados</h3>
             @foreach ($documents as $document)
                 <div class="document-item">
-                    <a href="{{ asset('storage/' . $document->file_path) }}" target="_blank">{{ $document->file_name }}</a>
-                    - Enviado em: {{ $document->created_at->format('d/m/Y H:i:s') }}
+                    {{ $document->file_name }} <br> Data: {{ $document->created_at->format('d/m/Y') }} <br> Hora: {{ $document->created_at->format('H:i:s') }}
                     <div class="button-container">
                         <a href="{{ route('documents.variables.view', ['document_id' => $document->id]) }}" class="button">Editar</a>
                         <a href="{{ route('documents.download.pdf', ['document_id' => $document->id, 'is_to_show' => true]) }}" class="button">Visualizar PDF</a>
-                        <a href="{{ route('documents.download.pdf', ['document_id' => $document->id]) }}" class="button">Baixar PDF</a>
-                        <a href="{{ asset('storage/' . $document->file_path) }}" class="button">Baixar DOCX</a>
+                        <a href="{{ route('documents.download.pdf', ['document_id' => $document->id]) }}" class="button">Baixar .pdf</a>
+                        <a href="{{ asset('storage/' . $document->file_path) }}" class="button">Baixar .docx</a>
                     </div>
                 </div>
             @endforeach
