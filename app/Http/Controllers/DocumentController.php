@@ -71,17 +71,30 @@ class DocumentController extends Controller
     {
         $documentId = $request->get('document_id');
         $isToShow = filter_var($request->get('is_to_show', false), FILTER_VALIDATE_BOOLEAN);
-        $document = Document::findOrFail($documentId);
+        $document = Document::with('variables')->findOrFail($documentId);
         $docxPath = storage_path('app/public/' . $document->file_path);
         $command = sprintf(
-            "HOME=/tmp libreoffice --headless --convert-to pdf --outdir %s %s",
-            dirname($docxPath),
-            $docxPath
+            "HOME=/tmp libreoffice --headless --convert-to html --outdir %s %s",
+            escapeshellarg(dirname($docxPath)),
+            escapeshellarg($docxPath)
         );
         exec($command);
-        $pdfOutputPath = dirname($docxPath) . '/' . pathinfo($docxPath)['filename'] . '.pdf';
+        $htmlOutputPath = dirname($docxPath) . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.html';
+        $html = file_get_contents($htmlOutputPath);
+        $variables = json_decode($document->variables->first()->variables, true);
+        foreach ($variables as $variable => $value) {
+            $html = str_replace('${' . $variable . '}', $value, $html);
+        }
+        file_put_contents($htmlOutputPath, $html);
+        $command = sprintf(
+            "HOME=/tmp libreoffice --headless --convert-to pdf --outdir %s %s",
+            escapeshellarg(dirname($htmlOutputPath)),
+            escapeshellarg($htmlOutputPath)
+        );
+        exec($command);
+        $pdfOutputPath = dirname($docxPath) . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.pdf';
         return $isToShow
-            ? response()->file($pdfOutputPath, ['Content-Type' => 'application/pdf'])->deleteFileAfterSend()
+            ? response()->file($pdfOutputPath)->deleteFileAfterSend()
             : response()->download($pdfOutputPath)->deleteFileAfterSend();
     }
 
