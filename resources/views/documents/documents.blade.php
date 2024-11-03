@@ -137,6 +137,11 @@
                         <a href="{{ route('documents.download.pdf', ['document_id' => $document->id, 'is_to_show' => true]) }}" class="button">Visualizar PDF</a>
                         <a href="{{ route('documents.download.pdf', ['document_id' => $document->id]) }}" class="button">Baixar .pdf</a>
                         <a href="{{ asset('storage/' . $document->file_path) }}" class="button">Baixar .docx</a>
+                        <form action="{{ route('documents.delete', ['document_id' => $document->id]) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja deletar este documento?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="button">Excluir</button>
+                        </form>
                     </div>
                 </div>
             @endforeach
