@@ -72,7 +72,7 @@ class DocumentController extends Controller
         $documentId = $request->get('document_id');
         $isToShow = filter_var($request->get('is_to_show', false), FILTER_VALIDATE_BOOLEAN);
         $document = Document::with('variables')->findOrFail($documentId);
-        $docxPath = storage_path('app/public/' . $document->file_path);
+        $docxPath = storage_path('app/' . $document->file_path);
         $command = sprintf(
             "HOME=/tmp libreoffice --headless --convert-to html --outdir %s %s",
             escapeshellarg(dirname($docxPath)),
@@ -105,8 +105,8 @@ class DocumentController extends Controller
         $documentName = $document->file_name;
         $document->delete();
         $filePath = $document->file_path;
-        if (Storage::disk('public')->exists($filePath)) {
-            Storage::disk('public')->delete($filePath);
+        if (Storage::disk()->exists($filePath)) {
+            Storage::disk()->delete($filePath);
         }
         return redirect()->route('documents')->with('success', "$documentName removido com sucesso!");
     }
