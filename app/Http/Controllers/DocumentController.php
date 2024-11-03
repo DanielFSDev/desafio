@@ -37,7 +37,10 @@ class DocumentController extends Controller
     public function variablesView(Request $request): View
     {
         $documentId = $request->get('document_id');
-        $document = Document::with('variables')->findOrFail($documentId);
+        $document = Document::with('variables')
+            ->where('id', $documentId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
         if (!$document) {
             return view('documents.documents')->with('error', 'Documento não encontrado!');
         }
