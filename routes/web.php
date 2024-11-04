@@ -16,5 +16,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/documents/edition', [DocumentController::class, 'variablesView'])->name('documents.variables.view');
     Route::post('/documents/edition', [DocumentController::class, 'saveVariables'])->name('documents.variables');
     Route::get('/documents/pdf', [DocumentController::class, 'downloadPdf'])->name('documents.download.pdf');
+    Route::get('/documents/docx', [DocumentController::class, 'downloadDocx'])->name('documents.download.docx');
     Route::delete('/documents', [DocumentController::class, 'delete'])->name('documents.delete');
 });

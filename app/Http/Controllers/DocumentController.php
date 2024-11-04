@@ -96,9 +96,6 @@ class DocumentController extends Controller
         $matchingFiles = glob($imagePattern);
         $imagePath = $matchingFiles[0];
         $pdfOutputPath = dirname($docxPath) . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.pdf';
-        if (file_exists($docxPath)) {
-            unlink($docxPath);
-        }
         if (file_exists($imagePath)) {
             unlink($imagePath);
         }
@@ -121,5 +118,69 @@ class DocumentController extends Controller
             Storage::disk()->delete($filePath);
         }
         return redirect()->route('documents')->with('success', "$documentName removido com sucesso!");
+    }
+
+    public function downloadDocx(Request $request): BinaryFileResponse
+    {
+        $documentId = $request->get('document_id');
+        $document = Document::with('variables')->findOrFail($documentId);
+        $docxPath = storage_path('app/' . $document->file_path);
+        $docxTempPath = $this->createFileCopy($docxPath);
+        $htmlPath = $this->convertTo($docxTempPath, 'html');
+        $this->replaceVariables($document, $htmlPath);
+        $docxOutputPath = $this->convertTo($htmlPath, 'docx');
+        $imagePath = $this->extractImagePath($htmlPath);
+        $this->removeIfExists($imagePath);
+        $this->removeIfExists($htmlPath);
+        return response()->download($docxOutputPath)->deleteFileAfterSend();
+    }
+
+    private function convertTo(string $filePath, string $type): string
+    {
+        $command = sprintf(
+            "HOME=/tmp libreoffice --headless --convert-to %s --outdir %s %s",
+            $type,
+            escapeshellarg(dirname($filePath)),
+            escapeshellarg($filePath)
+        );
+        if ($type === 'docx') {
+            dd($command);
+        }
+        exec($command);
+        return dirname($filePath) . '/' . pathinfo($filePath, PATHINFO_FILENAME) . '.' . $type;
+    }
+
+    private function replaceVariables(Document $document, string $htmlPath): void
+    {
+        $variables = json_decode($document->variables->first()?->variables ?? '[]', true);
+        $html = file_get_contents($htmlPath);
+        foreach ($variables as $variable => $value) {
+            $html = str_replace('${' . $variable . '}', $value, $html);
+        }
+        file_put_contents($htmlPath, $html);
+    }
+
+    private function removeIfExists(string $path): void
+    {
+        if (file_exists($path)) {
+            unlink($path);
+        }
+    }
+
+    private function extractImagePath(string $htmlPath): string
+    {
+        $imagePattern = dirname($htmlPath) . '/' . pathinfo($htmlPath, PATHINFO_FILENAME) . '_html_*.png';
+        $matchingFiles = glob($imagePattern);
+        return $matchingFiles[0] ?? '';
+    }
+
+    private function createFileCopy(string $filePath): string
+    {
+        $newFilePath = pathinfo($filePath,PATHINFO_DIRNAME)
+            . '/' . pathinfo($filePath, PATHINFO_FILENAME)
+            . '_' . uniqid()
+            . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
+        file_put_contents($newFilePath, file_get_contents($filePath));
+        return $newFilePath;
     }
 }
