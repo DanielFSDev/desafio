@@ -85,6 +85,9 @@
         <label for="local">Local:</label>
         <input type="text" id="local" name="variables[local]" value="{{ $variables['local'] ?? null  }}" required>
 
+        <label for="date">date:</label>
+        <input type="date" id="date" name="variables[date]" value="{{ $variables['date'] ?? null  }}" required>
+
         <button type="submit">Salvar</button>
     </form>
 </div>
