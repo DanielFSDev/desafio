@@ -9,11 +9,6 @@ if [ ! -f "$path_dir"/.env ]; then
   cp "$path_dir"/.env.example "$path_dir"/.env
 fi
 
-if ! grep -q "^APP_KEY=" "$path_dir"/.env || [ -z "$(grep "^APP_KEY=" "$path_dir"/.env | cut -d '=' -f2)" ]; then
-  echo "Gerando hash para a env APP_KEY"
-  php "$path_dir"/artisan key:generate
-fi
-
 cd "$path_dir" \
     && mkdir -p "$path_dir"/storage/logs \
     && touch "$path_dir"/storage/logs/laravel.log \
@@ -33,6 +28,11 @@ cd "$path_dir" \
     && chown -R $apache_user "$path_dir"/bootstrap/cache/ \
     && rm -rf bootstrap/cache/*.php \
     && chown -R $apache_user "$path_dir"/vendor/bin/* \
+
+if ! grep -q "^APP_KEY=" "$path_dir"/.env || [ -z "$(grep "^APP_KEY=" "$path_dir"/.env | cut -d '=' -f2)" ]; then
+  echo "Gerando hash para a env APP_KEY"
+  php "$path_dir"/artisan key:generate
+fi
 
 until mysql -h app_db -u app -papp -e 'select 1'; do
   >&2 echo "Aguardando o banco de dados..."
