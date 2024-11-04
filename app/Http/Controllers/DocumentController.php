@@ -128,7 +128,7 @@ class DocumentController extends Controller
         $docxTempPath = $this->createFileCopy($docxPath);
         $htmlPath = $this->convertTo($docxTempPath, 'html');
         $this->replaceVariables($document, $htmlPath);
-        $docxOutputPath = $this->convertTo($htmlPath, 'docx');
+        $docxOutputPath = $this->convertTo($htmlPath, '"docx:MS Word 2007 XML"');
         $imagePath = $this->extractImagePath($htmlPath);
         $this->removeIfExists($imagePath);
         $this->removeIfExists($htmlPath);
@@ -143,8 +143,8 @@ class DocumentController extends Controller
             escapeshellarg(dirname($filePath)),
             escapeshellarg($filePath)
         );
-        if ($type === 'docx') {
-            dd($command);
+        if (str_contains($type, 'docx')) {
+            $type = 'docx';
         }
         exec($command);
         return dirname($filePath) . '/' . pathinfo($filePath, PATHINFO_FILENAME) . '.' . $type;
