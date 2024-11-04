@@ -73,35 +73,13 @@ class DocumentController extends Controller
         $isToShow = filter_var($request->get('is_to_show', false), FILTER_VALIDATE_BOOLEAN);
         $document = Document::with('variables')->findOrFail($documentId);
         $docxPath = storage_path('app/' . $document->file_path);
-        $command = sprintf(
-            "HOME=/tmp libreoffice --headless --convert-to html --outdir %s %s",
-            escapeshellarg(dirname($docxPath)),
-            escapeshellarg($docxPath)
-        );
-        exec($command);
-        $htmlOutputPath = dirname($docxPath) . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.html';
-        $html = file_get_contents($htmlOutputPath);
-        $variables = json_decode($document->variables->first()?->variables ?? '[]', true);
-        foreach ($variables as $variable => $value) {
-            $html = str_replace('${' . $variable . '}', $value, $html);
-        }
-        file_put_contents($htmlOutputPath, $html);
-        $command = sprintf(
-            "HOME=/tmp libreoffice --headless --convert-to pdf --outdir %s %s",
-            escapeshellarg(dirname($htmlOutputPath)),
-            escapeshellarg($htmlOutputPath)
-        );
-        exec($command);
-        $imagePattern = dirname($docxPath) . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '_html_*.png';
-        $matchingFiles = glob($imagePattern);
-        $imagePath = $matchingFiles[0];
-        $pdfOutputPath = dirname($docxPath) . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.pdf';
-        if (file_exists($imagePath)) {
-            unlink($imagePath);
-        }
-        if (file_exists($htmlOutputPath)) {
-            unlink($htmlOutputPath);
-        }
+        $docxTempPath = $this->createFileCopy($docxPath);
+        $htmlPath = $this->convertTo($docxTempPath, 'html');
+        $this->replaceVariables($document, $htmlPath);
+        $imagePath = $this->extractImagePath($htmlPath);
+        $pdfOutputPath = $this->convertTo($htmlPath, 'pdf');
+        $this->removeIfExists($imagePath);
+        $this->removeIfExists($htmlPath);
         return $isToShow
             ? response()->file($pdfOutputPath)->deleteFileAfterSend()
             : response()->download($pdfOutputPath)->deleteFileAfterSend();
