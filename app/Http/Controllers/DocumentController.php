@@ -92,7 +92,19 @@ class DocumentController extends Controller
             escapeshellarg($htmlOutputPath)
         );
         exec($command);
+        $imagePattern = dirname($docxPath) . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '_html_*.png';
+        $matchingFiles = glob($imagePattern);
+        $imagePath = $matchingFiles[0];
         $pdfOutputPath = dirname($docxPath) . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.pdf';
+        if (file_exists($docxPath)) {
+            unlink($docxPath);
+        }
+        if (file_exists($imagePath)) {
+            unlink($imagePath);
+        }
+        if (file_exists($htmlOutputPath)) {
+            unlink($htmlOutputPath);
+        }
         return $isToShow
             ? response()->file($pdfOutputPath)->deleteFileAfterSend()
             : response()->download($pdfOutputPath)->deleteFileAfterSend();
