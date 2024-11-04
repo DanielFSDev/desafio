@@ -81,7 +81,7 @@ class DocumentController extends Controller
         exec($command);
         $htmlOutputPath = dirname($docxPath) . '/' . pathinfo($docxPath, PATHINFO_FILENAME) . '.html';
         $html = file_get_contents($htmlOutputPath);
-        $variables = json_decode($document->variables->first()->variables, true) ?? null;
+        $variables = json_decode($document->variables->first()?->variables ?? '[]', true);
         foreach ($variables as $variable => $value) {
             $html = str_replace('${' . $variable . '}', $value, $html);
         }
