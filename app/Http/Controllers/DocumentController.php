@@ -91,10 +91,8 @@ class DocumentController extends Controller
         $document = Document::findOrFail(request('document_id'));
         $documentName = $document->file_name;
         $document->delete();
-        $filePath = $document->file_path;
-        if (Storage::disk()->exists($filePath)) {
-            Storage::disk()->delete($filePath);
-        }
+        $filePath = storage_path('app/' . $document->file_path);
+        $this->removeIfExists($filePath);
         return redirect()->route('documents')->with('success', "$documentName removido com sucesso!");
     }
 
